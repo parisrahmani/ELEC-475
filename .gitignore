@@ -2,4 +2,5 @@ course-materials
 data/
 __pycache__/
 .venv/
-.DS_Store*.pth
+.DS_Store
+*.pth
