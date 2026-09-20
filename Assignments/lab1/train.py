@@ -16,7 +16,7 @@ DATA_DIR = './data'   # change if using Colab
 
 
 save_file = 'MLP.32.pth'
-n_epochs = 32
+n_epochs = 30
 batch_size = 256
 bottleneck_size = 32
 plot_file = 'loss.MLP.32.png'
