@@ -15,11 +15,11 @@ from model import autoencoderMLP4Layer
 DATA_DIR = './data'   # change if using Colab
 
 
-save_file = 'MLP.32.pth'
+save_file = 'MLP.128.pth'
 n_epochs = 30
 batch_size = 256
-bottleneck_size = 32
-plot_file = 'loss.MLP.32.png'
+bottleneck_size = 128
+plot_file = 'loss.MLP.128.png'
 
 
 def train(n_epochs, optimizer, model, loss_fn, train_loader, scheduler, device,

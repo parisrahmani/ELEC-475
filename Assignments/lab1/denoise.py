@@ -59,30 +59,29 @@ def main():
         print('label =', label, '(' + CLASSES[label] + ')')
 
         img = test_set.data[idx].type(torch.float32) / 255.0
-    
-
         noise = torch.rand_like(img) * 0.3
-        noise_img = torch.clamp(img + noise, min=0.0,max=1.0)
-        noise_img = noise_img.view(1,N_input).to(device=device)
-
+        noisy_img = torch.clamp(img + noise, min=0.0, max=1.0)
+        noisy_img = noisy_img.view(1, N_input).to(device=device)
 
         with torch.no_grad():
-            output = model(noise_img)
+            output = model(noisy_img)
 
         img = img.view(28, 28).cpu()
+        noisy_img = noisy_img.view(28, 28).cpu()
         output = output.view(28, 28).cpu()
-        noise_img = noise_img.view(28, 28).cpu()
 
         f = plt.figure()
         f.add_subplot(1, 3, 1)
         plt.imshow(img, cmap='gray')
         plt.title('input: ' + CLASSES[label])
+
         f.add_subplot(1, 3, 2)
+        plt.imshow(noisy_img, cmap='gray')
+        plt.title('input: ' + CLASSES[label])
+        
+        f.add_subplot(1, 3, 3)
         plt.imshow(output, cmap='gray')
         plt.title('reconstruction')
-        f.add_subplot(1, 3, 3)
-        plt.imshow(noise_img, cmap='gray')
-        plt.title('input: ' + CLASSES[label] + 'noise')
         plt.show()
 
 
