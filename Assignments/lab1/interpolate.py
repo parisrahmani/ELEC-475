@@ -108,7 +108,7 @@ def main():
                 final_outputs[i] = final_outputs[i].view(28, 28).cpu()
 
             # 6. Plot figure
-            f = plt.figure()
+            f = plt.figure(figsize=(20, 3))
             for i in range(n + 2):
                 f.add_subplot(1, n+2, i+1)
                 plt.imshow(final_outputs[i], cmap="gray")
@@ -117,6 +117,8 @@ def main():
                     plt.title(CLASSES[label1]) 
                 elif i == n + 1:
                     plt.title(CLASSES[label2])
+                else:
+                    plt.title(f"a = {a[i-1]:.2f}")
 
             plt.show()
 

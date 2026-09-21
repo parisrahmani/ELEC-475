@@ -77,11 +77,11 @@ def main():
 
         f.add_subplot(1, 3, 2)
         plt.imshow(noisy_img, cmap='gray')
-        plt.title('input: ' + CLASSES[label])
+        plt.title('add noise: ' + CLASSES[label])
         
         f.add_subplot(1, 3, 3)
         plt.imshow(output, cmap='gray')
-        plt.title('reconstruction')
+        plt.title('Reconstruction')
         plt.show()
 
 
