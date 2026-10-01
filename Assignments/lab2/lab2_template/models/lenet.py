@@ -7,13 +7,15 @@ Reference:
     "Gradient-Based Learning Applied to Document Recognition,"
     Proceedings of the IEEE, Nov. 1998.
 """
+
 import torch
 import torch.nn as nn
+
 
 class LeNet5(nn.Module):
     """
     Classical LeNet-5 Architecture adapted for (3, 64, 64) RGB images.
-    
+
     Spatial dimension arithmetic (Lecture 05 Slide 13 formula):
         Input  : (B, 3, 64, 64)
         Conv1  : (64 - 5)/1 + 1 = 60  --> (B, 6, 60, 60)
@@ -25,6 +27,7 @@ class LeNet5(nn.Module):
         FC2    : 120 -> 84
         FC3    : 84 -> num_classes
     """
+
     def __init__(self, num_classes: int = 10, in_channels: int = 3):
         super(LeNet5, self).__init__()
         self.num_classes = num_classes
@@ -42,10 +45,12 @@ class LeNet5(nn.Module):
         #   6. AvgPool2: kernel_size=2, stride=2
         # ======================================================================
         self.feature_extractor = nn.Sequential(
-            # Replace with your sequential convolutional layers:
-            # nn.Conv2d(...),
-            # nn.Tanh(),
-            # ...
+            nn.Conv2d(in_channels, 6, kernel_size=5, stride=1, padding=0),
+            nn.Tanh(),
+            nn.AvgPool2d(kernel_size=2, stride=2),
+            nn.Conv2d(6, 16, kernel_size=5, stride=1, padding=0),
+            nn.Tanh(),
+            nn.AvgPool2d(kernel_size=2, stride=2),
         )
 
         # ======================================================================
@@ -59,10 +64,11 @@ class LeNet5(nn.Module):
         #   5. FC3 (Output): in_features = 84, out_features = num_classes
         # ======================================================================
         self.classifier = nn.Sequential(
-            # Replace with your dense linear layers:
-            # nn.Linear(...),
-            # nn.Tanh(),
-            # ...
+            nn.Linear(16 * 13 * 13, 120),
+            nn.Tanh(),
+            nn.Linear(120, 84),
+            nn.Tanh(),
+            nn.Linear(84, num_classes),
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -74,10 +80,15 @@ class LeNet5(nn.Module):
         # 3. Pass flattened vector through self.classifier
         # 4. Return the computed logits
         # ======================================================================
-        pass
+        x = self.feature_extractor(x)
+        x = torch.flatten(x, start_dim=1)
+        x = self.classifier(x)
+        return x
+
 
 if __name__ == "__main__":
     from torchinfo import summary
+
     model = LeNet5(num_classes=10, in_channels=3)
     dummy_input = torch.randn(1, 3, 64, 64)
     print("Testing LeNet-5 Architecture:")
