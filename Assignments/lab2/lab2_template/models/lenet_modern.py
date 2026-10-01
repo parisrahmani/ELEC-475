@@ -6,8 +6,10 @@ Key Modifications from Base LeNet-5:
     1. Tanh -> ReLU (Lecture 05 Slide 4-5)
     2. 2x2 Average Pooling -> 3x3 Overlapping Max Pooling with stride=2 (Lecture 05 Slide 7)
 """
+
 import torch
 import torch.nn as nn
+
 
 class LeNetModern(nn.Module):
     """
@@ -27,6 +29,7 @@ class LeNetModern(nn.Module):
         FC2     : 120 -> 84 (with ReLU)
         FC3     : 84 -> num_classes
     """
+
     def __init__(self, num_classes: int = 10, in_channels: int = 3):
         super(LeNetModern, self).__init__()
         self.num_classes = num_classes
@@ -44,11 +47,12 @@ class LeNetModern(nn.Module):
         #   6. Overlapping MaxPool2: kernel_size=3, stride=2  [Ablation 2]
         # ======================================================================
         self.feature_extractor = nn.Sequential(
-            # Replace with modernized layers:
-            # nn.Conv2d(..., padding=2),
-            # nn.ReLU(inplace=True),
-            # nn.MaxPool2d(kernel_size=3, stride=2),
-            # ...
+            nn.Conv2d(in_channels, 6, kernel_size=5, stride=1, padding=2),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=2),
+            nn.Conv2d(6, 16, kernel_size=5, stride=1, padding=2),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=2),
         )
 
         # ======================================================================
@@ -62,20 +66,26 @@ class LeNetModern(nn.Module):
         #   5. FC3 (Output): in_features = 84, out_features = num_classes
         # ======================================================================
         self.classifier = nn.Sequential(
-            # Replace with dense layers using ReLU:
-            # nn.Linear(...),
-            # nn.ReLU(inplace=True),
-            # ...
+            nn.Linear(16 * 15 * 15, 120),
+            nn.ReLU(inplace=True),
+            nn.Linear(120, 84),
+            nn.ReLU(inplace=True),
+            nn.Linear(84, num_classes),
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # ======================================================================
         # TODO [IN-LAB STEP 4]: Implement Forward Pass
         # ======================================================================
-        pass
+        x = self.feature_extractor(x)
+        x = torch.flatten(x, start_dim=1)
+        x = self.classifier(x)
+        return x
+
 
 if __name__ == "__main__":
     from torchinfo import summary
+
     model = LeNetModern(num_classes=10, in_channels=3)
     dummy_input = torch.randn(1, 3, 64, 64)
     print("Testing Modernized LeNet Architecture:")
