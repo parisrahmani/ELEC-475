@@ -1,6 +1,16 @@
 course-materials
 data/
+data
+datasets/
+
 __pycache__/
 .venv/
 .DS_Store
 *.pth
+
+# Course handouts 
+ELEC475_*.pdf
+ELEC475_*.xlsx
+ELEC475_Report_Template.docx
+
+Claude outputs/
