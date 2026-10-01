@@ -5,10 +5,10 @@ from torchvision.datasets import FashionMNIST
 DATA_DIR = './data'
 
 CLASSES = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
-           'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
+'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
 
 train_set = FashionMNIST(DATA_DIR, train=True, download=False,
-                          transform=transforms.Compose([transforms.ToTensor()]))
+transform=transforms.Compose([transforms.ToTensor()]))
 
 idx = int(input('index > '))
 img = train_set.data[idx]
