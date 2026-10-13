@@ -136,12 +136,12 @@ def main():
     model = model.to(device)
 
     # 3. Model Profiler (FLOPs, MACs, Parameters)
-    profiler = ModelProfiler(model, input_size=(1, 3, 64, 64), device=str(device))
-    profiler.print_summary(model_name=f"{args.model.upper()} ({args.norm})")
-
     # Print summary
     print("\nDetailed Layer Specification:")
+    profiler = ModelProfiler(model, input_size=(1, 3, 64, 64), device=str(device))
+    profiler.print_summary(model_name=f"{args.model.upper()} ({args.norm})")
     summary(model, input_size=(1, 3, 64, 64), device=str(device))
+    
 
     # 4. Criterion & Optimizer
     criterion = nn.CrossEntropyLoss()

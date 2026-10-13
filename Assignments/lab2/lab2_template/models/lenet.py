@@ -29,21 +29,10 @@ class LeNet5(nn.Module):
     """
 
     def __init__(self, num_classes: int = 10, in_channels: int = 3):
-        super(LeNet5, self).__init__()
+        super().__init__()
         self.num_classes = num_classes
         self.in_channels = in_channels
 
-        # ======================================================================
-        # TODO [IN-LAB STEP 2]: Implement the LeNet-5 Feature Extractor
-        #
-        # Requirements:
-        #   1. Conv1: in_channels=in_channels, out_channels=6, kernel_size=5, stride=1, padding=0
-        #   2. Activation: nn.Tanh()
-        #   3. AvgPool1: kernel_size=2, stride=2
-        #   4. Conv2: in_channels=6, out_channels=16, kernel_size=5, stride=1, padding=0
-        #   5. Activation: nn.Tanh()
-        #   6. AvgPool2: kernel_size=2, stride=2
-        # ======================================================================
         self.feature_extractor = nn.Sequential(
             nn.Conv2d(in_channels, 6, kernel_size=5, stride=1, padding=0),
             nn.Tanh(),
@@ -53,38 +42,19 @@ class LeNet5(nn.Module):
             nn.AvgPool2d(kernel_size=2, stride=2),
         )
 
-        # ======================================================================
-        # TODO [IN-LAB STEP 2]: Implement the LeNet-5 Dense Classifier Head
-        #
-        # Requirements:
-        #   1. FC1: in_features = 16 * 13 * 13 (2,704), out_features = 120
-        #   2. Activation: nn.Tanh()
-        #   3. FC2: in_features = 120, out_features = 84
-        #   4. Activation: nn.Tanh()
-        #   5. FC3 (Output): in_features = 84, out_features = num_classes
-        # ======================================================================
         self.classifier = nn.Sequential(
             nn.Linear(16 * 13 * 13, 120),
             nn.Tanh(),
             nn.Linear(120, 84),
             nn.Tanh(),
             nn.Linear(84, num_classes),
-        )
+    )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # ======================================================================
-        # TODO [IN-LAB STEP 2]: Implement the Forward Pass
-        #
-        # 1. Pass input x through self.feature_extractor
-        # 2. Flatten spatial features using torch.flatten(x, start_dim=1)
-        # 3. Pass flattened vector through self.classifier
-        # 4. Return the computed logits
-        # ======================================================================
         x = self.feature_extractor(x)
         x = torch.flatten(x, start_dim=1)
         x = self.classifier(x)
-        return x
-
+        return x        
 
 if __name__ == "__main__":
     from torchinfo import summary
