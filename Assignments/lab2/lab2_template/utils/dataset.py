@@ -2,20 +2,32 @@
 ELEC 475: Lab 2 - Unified Dataset & DataLoader Factory
 Supports CIFAR-10 (primary) and Tiny ImageNet-200 (secondary benchmark).
 """
+
 import os
 import urllib.request
 import zipfile
+
 import torch
 from torch.utils.data import DataLoader
 from torchvision.datasets import CIFAR10, ImageFolder
-from .transforms import get_train_transforms, get_test_transforms
+
+from .transforms import get_test_transforms, get_train_transforms
 
 CIFAR10_CLASSES = [
-    'airplane', 'automobile', 'bird', 'cat', 'deer',
-    'dog', 'frog', 'horse', 'ship', 'truck'
+    "airplane",
+    "automobile",
+    "bird",
+    "cat",
+    "deer",
+    "dog",
+    "frog",
+    "horse",
+    "ship",
+    "truck",
 ]
 
 TINY_IMAGENET_URL = "http://cs231n.stanford.edu/tiny-imagenet-200.zip"
+
 
 def download_and_extract_tiny_imagenet(data_dir: str = "./data"):
     target_dir = os.path.join(data_dir, "tiny-imagenet-200")
@@ -31,10 +43,26 @@ def download_and_extract_tiny_imagenet(data_dir: str = "./data"):
         print("Download complete.")
 
     print(f"Extracting {zip_path}...")
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+    with zipfile.ZipFile(zip_path, "r") as zip_ref:
         zip_ref.extractall(data_dir)
     print("Extraction complete.")
     return target_dir
+
+
+def prepare_tiny_val(tiny_dir: str) -> str:
+    """FIX: sort val/images/*.JPEG into val/<class_id>/ folders (one-time, safe to re-run)."""
+    val_dir = os.path.join(tiny_dir, "val")
+    img_dir = os.path.join(val_dir, "images")
+    if not os.path.isdir(img_dir):
+        return val_dir
+    with open(os.path.join(val_dir, "val_annotations.txt")) as f:
+        for line in f:
+            fname, wnid = line.split("\t")[:2]
+            os.makedirs(os.path.join(val_dir, wnid), exist_ok=True)
+            os.rename(os.path.join(img_dir, fname), os.path.join(val_dir, wnid, fname))
+    os.rmdir(img_dir)
+    return val_dir
+
 
 def get_dataloaders(
     dataset: str = "cifar10",
@@ -43,16 +71,20 @@ def get_dataloaders(
     num_workers: int = 2,
     pin_memory: bool = True,
     use_augmentation: bool = True,
-    target_size: int = 64
+    target_size: int = 64,
 ):
     dataset_name = dataset.lower()
 
     if dataset_name == "cifar10":
-        train_tf = get_train_transforms("cifar10", augment=use_augmentation, target_size=target_size)
-        val_tf   = get_test_transforms("cifar10", target_size=target_size)
+        train_tf = get_train_transforms(
+            "cifar10", augment=use_augmentation, target_size=target_size
+        )
+        val_tf = get_test_transforms("cifar10", target_size=target_size)
 
-        train_set = CIFAR10(root=data_dir, train=True, download=True, transform=train_tf)
-        val_set   = CIFAR10(root=data_dir, train=False, download=True, transform=val_tf)
+        train_set = CIFAR10(
+            root=data_dir, train=True, download=True, transform=train_tf
+        )
+        val_set = CIFAR10(root=data_dir, train=False, download=True, transform=val_tf)
         num_classes = 10
         classes = CIFAR10_CLASSES
 
@@ -60,16 +92,21 @@ def get_dataloaders(
         tiny_dir = download_and_extract_tiny_imagenet(data_dir)
         train_dir = os.path.join(tiny_dir, "train")
 
-        train_tf = get_train_transforms("tiny_imagenet", augment=use_augmentation, target_size=target_size)
-        val_tf   = get_test_transforms("tiny_imagenet", target_size=target_size)
+        train_tf = get_train_transforms(
+            "tiny_imagenet", augment=use_augmentation, target_size=target_size
+        )
+        val_tf = get_test_transforms("tiny_imagenet", target_size=target_size)
 
         train_set = ImageFolder(root=train_dir, transform=train_tf)
-        val_set   = ImageFolder(root=train_dir, transform=val_tf)
+        val_dir = prepare_tiny_val(tiny_dir)
+        val_set = ImageFolder(root=val_dir, transform=val_tf)
         num_classes = 200
         classes = train_set.classes
 
     else:
-        raise ValueError(f"Unknown dataset '{dataset}'. Choose from 'cifar10', 'tiny_imagenet'.")
+        raise ValueError(
+            f"Unknown dataset '{dataset}'. Choose from 'cifar10', 'tiny_imagenet'."
+        )
 
     train_loader = DataLoader(
         train_set,
@@ -77,7 +114,7 @@ def get_dataloaders(
         shuffle=True,
         num_workers=num_workers,
         pin_memory=pin_memory and torch.cuda.is_available(),
-        drop_last=True
+        drop_last=True,
     )
 
     val_loader = DataLoader(
@@ -86,7 +123,7 @@ def get_dataloaders(
         shuffle=False,
         num_workers=num_workers,
         pin_memory=pin_memory and torch.cuda.is_available(),
-        drop_last=False
+        drop_last=False,
     )
 
     return train_loader, val_loader, num_classes, classes
