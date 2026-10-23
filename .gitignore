@@ -22,4 +22,5 @@ Claude outputs/
 
 data
 datasets
-course-materials*.synctex.gz
+course-materials
+*.synctex.gz
