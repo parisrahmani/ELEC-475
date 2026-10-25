@@ -111,21 +111,20 @@ if __name__ == "__main__":
         (SnoutNetVGG16(pretrained=False), "vgg16.pth"),
     ]
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")\
     
     for model, name in checks:
-        state = torch.load(f"checkpoints/{name}", map_location="device", weights_only=True)
+        state = torch.load(f"checkpoints/{name}", map_location="cpu", weights_only=True)
         model.load_state_dict(state, strict=True)
         print(f"Loaded {name}")
 
     # --- Task 5, Step 2: reproduce a known prediction ---
     from utils.dataset import PetNoseDataset
 
-    model = checks[0][0].to(device)
+    model = checks[0][0]
     dataset = PetNoseDataset(split="test")
     model.eval()
     image, label, orig_size = dataset[0]
     with torch.no_grad():
-        pred = model(image.unsqueeze(0).to(device))[0].cpu()
+        pred = model(image.unsqueeze(0))[0]
     print("Ground truth:", label / 227 * orig_size)
     print("Prediction: ", pred * orig_size)
