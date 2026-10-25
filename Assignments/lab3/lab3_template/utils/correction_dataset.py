@@ -69,7 +69,7 @@ class CorrectionDataset(PetNoseDataset):
         name, u , v = self.samples[idx]
         img = Image.open(os.path.join(self.img_dir, name)).convert("RGB")
 
-        # Add a radom offset to u and v
+        # Add a random offset to u and v
         t_u = round(u + random.uniform(-MAX_OFFSET, MAX_OFFSET))
         t_v = round(v + random.uniform(-MAX_OFFSET, MAX_OFFSET))
         # Choose a random patch centre near true nose
@@ -86,6 +86,7 @@ class CorrectionDataset(PetNoseDataset):
             patch = self.color_jitter(patch)
 
         patch = TF.normalize(TF.to_tensor(patch), MEAN, STD)
+        # t = 0 means correct center, t = ±1 means nose is on patch edge -> independent of pixel
         target = torch.tensor([du, dv], dtype=torch.float32) / HALF_PATCH
 
         return patch, target
