@@ -12,17 +12,20 @@ centre to the true nose, divided by HALF_PATCH so it lies roughly in [-1, 1]:
 
     corrected (u, v) = patch centre + target * HALF_PATCH
 """
+
 import random
+
 import torch
 import torchvision.transforms as transforms
 import torchvision.transforms.functional as TF
 from PIL import Image
-from utils.dataset import PetNoseDataset, MEAN, STD
 
-PATCH_SIZE = 128              # side of the cropped region, in original-image pixels
+from utils.dataset import MEAN, STD, PetNoseDataset
+
+PATCH_SIZE = 128  # side of the cropped region, in original-image pixels
 HALF_PATCH = PATCH_SIZE // 2  # offsets are divided by this to normalize them
-INPUT_SIZE = 64               # the patch is resized to INPUT_SIZE x INPUT_SIZE
-MAX_OFFSET = 40               # largest training offset in u and v, in original-image pixels
+INPUT_SIZE = 64  # the patch is resized to INPUT_SIZE x INPUT_SIZE
+MAX_OFFSET = 40  # largest training offset in u and v, in original-image pixels
 
 
 def extract_patch(img: Image.Image, center) -> Image.Image:
@@ -45,7 +48,10 @@ def extract_patch(img: Image.Image, center) -> Image.Image:
     #      (img.crop() fills any part of the region outside the image with black)
     #   2. Resize the region to (INPUT_SIZE, INPUT_SIZE) with Image.BILINEAR
     # ======================================================================
-    pass
+    cu, cv = center
+    box = (cu - HALF_PATCH, cv - HALF_PATCH, cu + HALF_PATCH, cv + HALF_PATCH)
+    region = img.crop(box)
+    return region.resize((INPUT_SIZE, INPUT_SIZE), Image.BILINEAR)
 
 
 class CorrectionDataset(PetNoseDataset):
@@ -53,10 +59,13 @@ class CorrectionDataset(PetNoseDataset):
     One random patch per training image per epoch. Inherits self.samples
     (a list of (name, u, v)), self.img_dir and __len__ from PetNoseDataset.
     """
+
     def __init__(self, root: str = "data/oxford-iiit-pet-noses", augment: bool = True):
         super(CorrectionDataset, self).__init__(root=root, split="train")
         self.augment = augment
-        self.color_jitter = transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3)
+        self.color_jitter = transforms.ColorJitter(
+            brightness=0.3, contrast=0.3, saturation=0.3
+        )
 
     def __getitem__(self, idx: int):
         """
@@ -89,12 +98,14 @@ if __name__ == "__main__":
     # Reality check: saves 8 patches with their centre (red cross) and
     # target nose position (green circle) drawn on.
     import os
+
     import matplotlib.pyplot as plt
+
     from utils.dataset import denormalize
     from utils.visualization import show_prediction
 
     centre = INPUT_SIZE / 2
-    scale = INPUT_SIZE / PATCH_SIZE               # original-image pixels -> patch pixels
+    scale = INPUT_SIZE / PATCH_SIZE  # original-image pixels -> patch pixels
     os.makedirs("plots", exist_ok=True)
     try:
         for augment in [False, True]:
@@ -105,12 +116,21 @@ if __name__ == "__main__":
                 patch, target = ds[i]
                 offset = target * HALF_PATCH
                 nose = (centre + offset[0] * scale, centre + offset[1] * scale)
-                show_prediction(ax, TF.to_pil_image(denormalize(patch)), nose, (centre, centre),
-                                f"offset ({offset[0]:.0f}, {offset[1]:.0f}) px")
-            save_path = os.path.join("plots", f"correction_patches{'_aug' if augment else ''}.png")
+                show_prediction(
+                    ax,
+                    TF.to_pil_image(denormalize(patch)),
+                    nose,
+                    (centre, centre),
+                    f"offset ({offset[0]:.0f}, {offset[1]:.0f}) px",
+                )
+            save_path = os.path.join(
+                "plots", f"correction_patches{'_aug' if augment else ''}.png"
+            )
             fig.tight_layout()
             fig.savefig(save_path, dpi=200)
             plt.close(fig)
-            print(f"{len(ds):,} training images | augment={augment} | saved to: {save_path}")
+            print(
+                f"{len(ds):,} training images | augment={augment} | saved to: {save_path}"
+            )
     except Exception as e:
         print(f"CorrectionDataset not fully implemented yet: {e}")
