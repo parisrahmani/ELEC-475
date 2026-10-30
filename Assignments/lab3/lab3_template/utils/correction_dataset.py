@@ -91,7 +91,25 @@ class CorrectionDataset(PetNoseDataset):
         #   5. Return TF.normalize(TF.to_tensor(patch), MEAN, STD) and the
         #      normalized target (du, dv) / HALF_PATCH
         # ======================================================================
-        pass
+        name, u, v = self.samples[idx]
+        img = Image.open(self.img_dir / name).convert("RGB")
+
+        # fake "first prediction": true nose + random error of up to ±40 px
+        cu = round(u + random.uniform(-MAX_OFFSET, MAX_OFFSET))
+        cv = round(v + random.uniform(-MAX_OFFSET, MAX_OFFSET))
+
+        patch = extract_patch(img, (cu, cv))
+        du, dv = u - cu, v - cv                     
+
+        if self.augment:
+            if random.random() < 0.5:
+                patch = patch.transpose(Image.FLIP_LEFT_RIGHT)
+                du = -du                           
+            patch = self.color_jitter(patch)        # colours change, geometry doesn't
+
+        patch = TF.normalize(TF.to_tensor(patch), MEAN, STD)
+        target = torch.tensor([du, dv], dtype=torch.float32) / HALF_PATCH
+        return patch, target
 
 
 if __name__ == "__main__":
