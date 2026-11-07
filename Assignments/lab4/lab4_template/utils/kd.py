@@ -20,7 +20,6 @@ def response_kd_loss(z_s, z_t, y, alpha=0.5, beta=0.5, tau=4.0, ignore_index=255
 def feature_kd_loss(f_s, f_t):
     """Feature-based KD loss: 1 - cosine similarity, averaged over all positions.
     f_s: (N, C, h, w) projected student features. f_t: (N, C, H, W) teacher features."""
-    # TODO: complete in Step 4
     H, W = f_t.shape[2:]
     resized_f_s = F.interpolate(
         f_s,
