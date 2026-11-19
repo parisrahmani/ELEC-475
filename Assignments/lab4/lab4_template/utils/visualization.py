@@ -36,7 +36,15 @@ def save_comparison(images, masks, preds, path):
         rgb = to_rgb(images[i])
         panels = [(rgb, 'Image'), (PALETTE[masks[i].cpu().numpy()] / 255, 'Ground truth')]
         for name, p in preds.items():
-            panels.append((0.5 * rgb + 0.5 * PALETTE[p[i].cpu().numpy()] / 255, name))
+            pred_np = p[i].cpu().numpy()
+            panels.append((0.5 * rgb + 0.5 * PALETTE[pred_np] / 255, name))
+
+            gt = masks[i].cpu().numpy()
+            wrong = (pred_np != gt) & (gt != 255)
+
+            error_view = rgb.copy()
+            error_view[wrong] = [1, 0, 0]
+            panels.append((error_view, f'{name} errors'))
         for a, (im, t) in zip(ax[i], panels):
             a.imshow(im)
             a.set_title(t, fontsize=9)

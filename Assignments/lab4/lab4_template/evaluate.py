@@ -15,6 +15,9 @@ parser.add_argument('--data', default='./data')
 parser.add_argument('--size', type=int, default=320)
 parser.add_argument('-b', '--batch', type=int, default=16)
 args = parser.parse_args()
+# Show for visualization
+num_examples = 8
+example_batch = 10
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 loader = DataLoader(get_voc(args.data, 'val', args.size), batch_size=args.batch, shuffle=False)
@@ -37,9 +40,9 @@ with torch.no_grad():
         for i, (img, mask) in enumerate(loader):
             pred = model(img.to(device))['out'].argmax(1).cpu()
             conf = update_confusion(conf, pred, mask)
-            if i == 0:
-                examples[name] = pred[:4]
-                first_img, first_mask = img[:4], mask[:4]
+            if i == example_batch:
+                examples[name] = pred[:num_examples]
+                first_img, first_mask = img[:num_examples], mask[:num_examples]
         params = sum(p.numel() for p in model.parameters())
         rows.append((name, 100 * mean_iou(conf), params, ms_per_image(model, device, args.size)))
 
