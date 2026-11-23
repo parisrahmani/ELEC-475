@@ -233,4 +233,5 @@ plt.savefig(
     if args.model == "student"
     else f"plots/loss_my_student_{args.kd}.png"
 )
-print(f"Saved plots/loss_{args.kd}.png")
+plt.savefig(plot_path, dpi=100)
+print(f"Saved {plot_path}")
