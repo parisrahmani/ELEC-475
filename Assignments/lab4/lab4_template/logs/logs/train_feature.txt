@@ -1,0 +1,43 @@
+Training student with kd=feature on cuda (NVIDIA A100-SXM4-80GB) for up to 100 epochs
+Settings: batch 16, lr 0.001, size 320, alpha 0.5, beta 0.5, tau 4.0, gamma 1.0, lr-patience 2, lr-factor 0.5, patience 5, tol 0.1
+epoch 1/100  loss 2.362  val mIoU 18.3  lr 1.00e-03  (17 s)  [saved best]
+epoch 2/100  loss 1.464  val mIoU 25.9  lr 1.00e-03  (32 s)  [saved best]
+epoch 3/100  loss 1.170  val mIoU 28.0  lr 1.00e-03  (48 s)  [saved best]
+epoch 4/100  loss 1.041  val mIoU 34.2  lr 1.00e-03  (63 s)  [saved best]
+epoch 5/100  loss 0.974  val mIoU 36.7  lr 1.00e-03  (78 s)  [saved best]
+epoch 6/100  loss 0.917  val mIoU 36.6  lr 1.00e-03  (93 s)
+epoch 7/100  loss 0.872  val mIoU 41.9  lr 1.00e-03  (108 s)  [saved best]
+epoch 8/100  loss 0.823  val mIoU 42.8  lr 1.00e-03  (123 s)  [saved best]
+epoch 9/100  loss 0.811  val mIoU 44.4  lr 1.00e-03  (139 s)  [saved best]
+epoch 10/100  loss 0.774  val mIoU 45.7  lr 1.00e-03  (154 s)  [saved best]
+epoch 11/100  loss 0.747  val mIoU 46.3  lr 1.00e-03  (169 s)  [saved best]
+epoch 12/100  loss 0.746  val mIoU 44.6  lr 1.00e-03  (184 s)
+epoch 13/100  loss 0.753  val mIoU 44.1  lr 1.00e-03  (200 s)
+epoch 14/100  loss 0.713  val mIoU 49.6  lr 1.00e-03  (215 s)  [saved best]
+epoch 15/100  loss 0.698  val mIoU 46.5  lr 1.00e-03  (230 s)
+epoch 16/100  loss 0.701  val mIoU 43.5  lr 1.00e-03  (245 s)
+epoch 17/100  loss 0.712  val mIoU 48.2  lr 1.00e-03  (260 s)
+epoch 18/100  loss 0.665  val mIoU 51.1  lr 5.00e-04  (275 s)  [saved best]
+epoch 19/100  loss 0.650  val mIoU 51.4  lr 5.00e-04  (291 s)  [saved best]
+epoch 20/100  loss 0.644  val mIoU 52.2  lr 5.00e-04  (306 s)  [saved best]
+epoch 21/100  loss 0.640  val mIoU 50.2  lr 5.00e-04  (321 s)
+epoch 22/100  loss 0.636  val mIoU 52.0  lr 5.00e-04  (336 s)
+epoch 23/100  loss 0.628  val mIoU 52.1  lr 5.00e-04  (352 s)
+epoch 24/100  loss 0.624  val mIoU 52.3  lr 2.50e-04  (367 s)  [saved best]
+epoch 25/100  loss 0.623  val mIoU 52.6  lr 2.50e-04  (382 s)  [saved best]
+epoch 26/100  loss 0.621  val mIoU 52.5  lr 2.50e-04  (398 s)
+epoch 27/100  loss 0.618  val mIoU 52.4  lr 2.50e-04  (413 s)
+epoch 28/100  loss 0.614  val mIoU 52.8  lr 2.50e-04  (429 s)  [saved best]
+epoch 29/100  loss 0.613  val mIoU 52.5  lr 2.50e-04  (444 s)
+epoch 30/100  loss 0.611  val mIoU 52.8  lr 2.50e-04  (459 s)  [saved best]
+epoch 31/100  loss 0.609  val mIoU 52.7  lr 2.50e-04  (474 s)
+epoch 32/100  loss 0.607  val mIoU 53.1  lr 1.25e-04  (489 s)  [saved best]
+epoch 33/100  loss 0.604  val mIoU 53.1  lr 1.25e-04  (505 s)  [saved best]
+epoch 34/100  loss 0.606  val mIoU 53.0  lr 1.25e-04  (520 s)
+epoch 35/100  loss 0.604  val mIoU 52.9  lr 1.25e-04  (535 s)
+epoch 36/100  loss 0.601  val mIoU 52.9  lr 6.25e-05  (550 s)
+epoch 37/100  loss 0.602  val mIoU 52.9  lr 6.25e-05  (566 s)
+Early stopping: no improvement of more than 0.1 mIoU for 5 epochs
+Summary kd=feature: 37 epochs, best val mIoU 53.1 at epoch 33, final lr 6.25e-05, training time 566 s (9.4 min, 15.3 s/epoch), hardware NVIDIA A100-SXM4-80GB
+Saved checkpoints/student_feature.pth (weights from epoch 33)
+Saved plots/loss_feature.png
