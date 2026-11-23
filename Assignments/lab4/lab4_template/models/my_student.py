@@ -87,7 +87,7 @@ if __name__ == "__main__":
     from utils.profiler import ms_per_image
 
     model = MyStudentNet().eval()
-    summary(model, input_size=(1, 3, 320, 320), depth=1)
+    summary(model, input_size=(1, 3, 320, 320), depth=1, device="cpu")
     with torch.no_grad():
         out = model(torch.randn(1, 3, 320, 320))
     for k, v in out.items():
