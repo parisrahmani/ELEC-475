@@ -1,0 +1,49 @@
+Downloading: "https://download.pytorch.org/models/fcn_resnet50_coco-1167a1af.pth" to /root/.cache/torch/hub/checkpoints/fcn_resnet50_coco-1167a1af.pth
+  0%|          | 0.00/135M [00:00<?, ?B/s] 12%|█▏        | 16.8M/135M [00:00<00:00, 174MB/s] 26%|██▌       | 35.0M/135M [00:00<00:00, 184MB/s] 39%|███▉      | 53.1M/135M [00:00<00:00, 186MB/s] 53%|█████▎    | 71.2M/135M [00:00<00:00, 187MB/s] 66%|██████▌   | 89.4M/135M [00:00<00:00, 188MB/s] 80%|███████▉  | 108M/135M [00:00<00:00, 189MB/s]  95%|█████████▍| 128M/135M [00:00<00:00, 197MB/s]100%|██████████| 135M/135M [00:00<00:00, 193MB/s]
+Training student with kd=response on cuda (NVIDIA A100-SXM4-80GB) for up to 100 epochs
+Settings: batch 16, lr 0.001, size 320, alpha 0.5, beta 0.5, tau 4.0, gamma 1.0, lr-patience 2, lr-factor 0.5, patience 5, tol 0.1
+epoch 1/100  loss 1.940  val mIoU 14.7  lr 1.00e-03  (16 s)  [saved best]
+epoch 2/100  loss 1.602  val mIoU 22.0  lr 1.00e-03  (29 s)  [saved best]
+epoch 3/100  loss 1.525  val mIoU 23.1  lr 1.00e-03  (43 s)  [saved best]
+epoch 4/100  loss 1.461  val mIoU 32.1  lr 1.00e-03  (57 s)  [saved best]
+epoch 5/100  loss 1.427  val mIoU 37.4  lr 1.00e-03  (71 s)  [saved best]
+epoch 6/100  loss 1.386  val mIoU 39.5  lr 1.00e-03  (85 s)  [saved best]
+epoch 7/100  loss 1.363  val mIoU 43.5  lr 1.00e-03  (99 s)  [saved best]
+epoch 8/100  loss 1.349  val mIoU 40.6  lr 1.00e-03  (112 s)
+epoch 9/100  loss 1.332  val mIoU 46.0  lr 1.00e-03  (126 s)  [saved best]
+epoch 10/100  loss 1.317  val mIoU 45.1  lr 1.00e-03  (140 s)
+epoch 11/100  loss 1.324  val mIoU 42.7  lr 1.00e-03  (154 s)
+epoch 12/100  loss 1.310  val mIoU 45.8  lr 1.00e-03  (167 s)
+epoch 13/100  loss 1.287  val mIoU 49.9  lr 5.00e-04  (181 s)  [saved best]
+epoch 14/100  loss 1.273  val mIoU 49.8  lr 5.00e-04  (195 s)
+epoch 15/100  loss 1.270  val mIoU 49.7  lr 5.00e-04  (208 s)
+epoch 16/100  loss 1.265  val mIoU 51.1  lr 5.00e-04  (222 s)  [saved best]
+epoch 17/100  loss 1.266  val mIoU 50.7  lr 5.00e-04  (236 s)
+epoch 18/100  loss 1.260  val mIoU 51.1  lr 5.00e-04  (250 s)
+epoch 19/100  loss 1.256  val mIoU 51.3  lr 5.00e-04  (263 s)  [saved best]
+epoch 20/100  loss 1.257  val mIoU 50.7  lr 5.00e-04  (277 s)
+epoch 21/100  loss 1.257  val mIoU 50.0  lr 5.00e-04  (291 s)
+epoch 22/100  loss 1.256  val mIoU 50.6  lr 5.00e-04  (304 s)
+epoch 23/100  loss 1.251  val mIoU 51.8  lr 2.50e-04  (318 s)  [saved best]
+epoch 24/100  loss 1.250  val mIoU 51.7  lr 2.50e-04  (332 s)
+epoch 25/100  loss 1.249  val mIoU 51.9  lr 2.50e-04  (346 s)  [saved best]
+epoch 26/100  loss 1.247  val mIoU 52.0  lr 2.50e-04  (359 s)  [saved best]
+epoch 27/100  loss 1.246  val mIoU 51.5  lr 2.50e-04  (372 s)
+epoch 28/100  loss 1.245  val mIoU 51.9  lr 2.50e-04  (386 s)
+epoch 29/100  loss 1.245  val mIoU 51.9  lr 2.50e-04  (400 s)
+epoch 30/100  loss 1.244  val mIoU 51.9  lr 1.25e-04  (414 s)
+epoch 31/100  loss 1.243  val mIoU 52.1  lr 1.25e-04  (427 s)  [saved best]
+epoch 32/100  loss 1.244  val mIoU 51.9  lr 1.25e-04  (441 s)
+epoch 33/100  loss 1.242  val mIoU 52.1  lr 1.25e-04  (455 s)  [saved best]
+epoch 34/100  loss 1.242  val mIoU 52.0  lr 1.25e-04  (468 s)
+epoch 35/100  loss 1.241  val mIoU 52.0  lr 6.25e-05  (482 s)
+epoch 36/100  loss 1.241  val mIoU 52.5  lr 6.25e-05  (496 s)  [saved best]
+epoch 37/100  loss 1.240  val mIoU 52.2  lr 6.25e-05  (510 s)
+epoch 38/100  loss 1.242  val mIoU 52.2  lr 6.25e-05  (523 s)
+epoch 39/100  loss 1.240  val mIoU 52.3  lr 6.25e-05  (537 s)
+epoch 40/100  loss 1.239  val mIoU 52.1  lr 3.13e-05  (551 s)
+epoch 41/100  loss 1.240  val mIoU 52.5  lr 3.13e-05  (564 s)
+Early stopping: no improvement of more than 0.1 mIoU for 5 epochs
+Summary kd=response: 41 epochs, best val mIoU 52.5 at epoch 36, final lr 3.13e-05, training time 564 s (9.4 min, 13.8 s/epoch), hardware NVIDIA A100-SXM4-80GB
+Saved checkpoints/student_response.pth (weights from epoch 36)
+Saved plots/loss_response.png
