@@ -25,6 +25,14 @@ parser.add_argument('--alpha', type=float, default=0.5)
 parser.add_argument('--beta', type=float, default=0.5)
 parser.add_argument('--tau', type=float, default=4.0)
 parser.add_argument('--gamma', type=float, default=1.0)
+parser.add_argument('--lr-patience', type=int, default=2,
+                    help='epochs without improvement before the learning rate is reduced')
+parser.add_argument('--lr-factor', type=float, default=0.5,
+                    help='factor the learning rate is multiplied by on a plateau')
+parser.add_argument('--patience', type=int, default=5,
+                    help='early stopping: epochs without improvement before training stops')
+parser.add_argument('--tol', type=float, default=0.1,
+                    help='minimum rise in validation mIoU (in mIoU points) that counts as an improvement')
 parser.add_argument('--workers', type=int, default=2)
 parser.add_argument('--iters', type=int, default=0,
                     help='kick-start: stop after this many iterations (0 = full training)')
@@ -32,6 +40,7 @@ args = parser.parse_args()
 
 torch.manual_seed(0)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+hardware = torch.cuda.get_device_name(0) if device.type == 'cuda' else 'CPU'
 train_loader = DataLoader(get_voc(args.data, 'train', args.size), batch_size=args.batch,
                           shuffle=True, num_workers=args.workers, drop_last=True)
 val_loader = DataLoader(get_voc(args.data, 'val', args.size), batch_size=args.batch,
@@ -49,12 +58,29 @@ if args.kd == 'feature':
     params += list(adapters.parameters())
 
 optimizer = torch.optim.Adam(params, lr=args.lr)
-print(f'Training student with kd={args.kd} on {device}' +
-      (f' for {args.iters} iterations' if args.iters else f' for {args.epochs} epochs'))
+# Reduce the learning rate when validation mIoU (maximised) stops improving by more than --tol points
+scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+    optimizer, mode='max', factor=args.lr_factor, patience=args.lr_patience,
+    threshold=args.tol, threshold_mode='abs')
+
+print(f'Training student with kd={args.kd} on {device} ({hardware})' +
+      (f' for {args.iters} iterations' if args.iters else f' for up to {args.epochs} epochs'))
+if not args.iters:
+    print(f'Settings: batch {args.batch}, lr {args.lr:g}, size {args.size}, '
+          f'alpha {args.alpha}, beta {args.beta}, tau {args.tau}, gamma {args.gamma}, '
+          f'lr-patience {args.lr_patience}, lr-factor {args.lr_factor}, '
+          f'patience {args.patience}, tol {args.tol}')
+
+os.makedirs('checkpoints', exist_ok=True)
+ckpt_path = f'checkpoints/student_{args.kd}.pth'
+best_miou, best_epoch = -1.0, 0     # best mIoU so far: decides which weights are saved
+stop_ref, bad_epochs = -1.0, 0      # early stopping: a rise of more than --tol over stop_ref resets the count
+epoch_times = []
 
 losses = []
 start = time.time()
 for epoch in range(1, (10**6 if args.iters else args.epochs) + 1):
+    epoch_start = time.time()
     student.train()
     for img, mask in train_loader:
         img, mask = img.to(device), mask.to(device)
@@ -90,17 +116,39 @@ for epoch in range(1, (10**6 if args.iters else args.epochs) + 1):
         for img, mask in val_loader:
             pred = student(img.to(device))['out'].argmax(1).cpu()
             conf = update_confusion(conf, pred, mask)
+    miou = 100 * mean_iou(conf)
+    lr_now = optimizer.param_groups[0]['lr']      # learning rate used during this epoch
+    epoch_times.append(time.time() - epoch_start)
+
+    marks = []
+    if miou > best_miou:                          # keep the weights of the best epoch
+        best_miou, best_epoch = miou, epoch
+        torch.save(student.state_dict(), ckpt_path)
+        marks.append('saved best')
+    if miou > stop_ref + args.tol:                # counts as an improvement for early stopping
+        stop_ref, bad_epochs = miou, 0
+    else:
+        bad_epochs += 1
+    scheduler.step(miou)
+
     print(f'epoch {epoch}/{args.epochs}  loss {sum(losses[-len(train_loader):]) / len(train_loader):.3f}'
-          f'  val mIoU {100 * mean_iou(conf):.1f}  ({time.time() - start:.0f} s)')
+          f'  val mIoU {miou:.1f}  lr {lr_now:.2e}  ({time.time() - start:.0f} s)'
+          + (f'  [{", ".join(marks)}]' if marks else ''))
+
+    if bad_epochs >= args.patience:
+        print(f'Early stopping: no improvement of more than {args.tol} mIoU for {args.patience} epochs')
+        break
 
 os.makedirs('plots', exist_ok=True)
 if args.iters:
     first, last = sum(losses[:5]) / 5, sum(losses[-5:]) / 5
     print(f'Kick-start finished: average loss {first:.3f} (first 5) -> {last:.3f} (last 5)')
 else:
-    os.makedirs('checkpoints', exist_ok=True)
-    torch.save(student.state_dict(), f'checkpoints/student_{args.kd}.pth')
-    print(f'Saved checkpoints/student_{args.kd}.pth')
+    total = time.time() - start
+    print(f'Summary kd={args.kd}: {len(epoch_times)} epochs, best val mIoU {best_miou:.1f} at epoch {best_epoch}, '
+          f'final lr {optimizer.param_groups[0]["lr"]:.2e}, training time {total:.0f} s '
+          f'({total / 60:.1f} min, {total / len(epoch_times):.1f} s/epoch), hardware {hardware}')
+    print(f'Saved {ckpt_path} (weights from epoch {best_epoch})')
 plt.figure(figsize=(6, 4))
 plt.plot(losses)
 plt.xlabel('iteration')

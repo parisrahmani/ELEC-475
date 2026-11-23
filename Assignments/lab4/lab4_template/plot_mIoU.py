@@ -1,17 +1,20 @@
 import re
+import sys
 from pathlib import Path
 
 import matplotlib
 import matplotlib.pyplot as plt
 
 
-log_path = Path(__file__).with_name("postlab_terminal_outputs.txt")
+# Usage: python plot_mIoU.py [log file]   (default: postlab_terminal_outputs.txt next to this script)
+log_path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).with_name("postlab_terminal_outputs.txt")
 runs = {"none": [], "response": [], "feature": []}
 teacher_miou = None
 current_run = None
 
 run_pattern = re.compile(r"Training student with kd=(none|response|feature)")
-epoch_pattern = re.compile(r"epoch\s+(\d+)/100\b.*?val mIoU\s+([\d.]+)")
+# Matches both the old log format and the new one (which adds "lr ..." after the mIoU)
+epoch_pattern = re.compile(r"epoch\s+(\d+)/\d+\b.*?val mIoU\s+([\d.]+)")
 teacher_pattern = re.compile(r"^Teacher \(FCN-ResNet50\)\s+([\d.]+)")
 
 for line in log_path.read_text(encoding="utf-8").splitlines():
@@ -31,10 +34,11 @@ for line in log_path.read_text(encoding="utf-8").splitlines():
     if teacher_match:
         teacher_miou = float(teacher_match.group(1))
 
-expected_epochs = list(range(1, 101))
+# Runs may stop early, so each run only needs sequential epochs starting at 1
 for name, values in runs.items():
-    if [epoch for epoch, _ in values] != expected_epochs:
-        raise ValueError(f"Expected 100 sequential epochs for {name}; found {len(values)}.")
+    epochs = [epoch for epoch, _ in values]
+    if not epochs or epochs != list(range(1, len(epochs) + 1)):
+        raise ValueError(f"Expected sequential epochs starting at 1 for {name}; found {len(epochs)}.")
 if teacher_miou is None:
     raise ValueError("Teacher mIoU was not found in the log.")
 
@@ -48,6 +52,8 @@ styles = [
 for key, label, color in styles:
     epochs, scores = zip(*runs[key])
     ax.plot(epochs, scores, label=label, color=color)
+    best_epoch, best_score = max(runs[key], key=lambda item: item[1])
+    ax.plot(best_epoch, best_score, marker="o", color=color)   # best epoch = saved checkpoint
 
 ax.axhline(
     teacher_miou,
@@ -56,10 +62,10 @@ ax.axhline(
     linestyle="--",
 )
 
+last_epoch = max(len(values) for values in runs.values())
 ax.set_xlabel("Epoch")
 ax.set_ylabel("Validation mIoU (%)")
-ax.set_xlim(1, 100)
-ax.set_xticks(range(0, 101, 10))
+ax.set_xlim(1, last_epoch)
 ax.set_title("Validation mIoU by Epoch")
 ax.grid(True, alpha=0.3)
 ax.legend()
