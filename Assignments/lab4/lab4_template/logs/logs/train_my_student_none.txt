@@ -1,0 +1,31 @@
+Model: mine, 1,343,157 params
+Training student with kd=none on cuda (NVIDIA L4) for up to 100 epochs
+Settings: batch 16, lr 0.001, size 320, alpha 0.5, beta 0.5, tau 4.0, gamma 1.0, lr-patience 2, lr-factor 0.5, patience 5, tol 0.1
+epoch 1/100  loss 1.422  val mIoU 12.8  lr 1.00e-03  (14 s)  [saved best]
+epoch 2/100  loss 0.766  val mIoU 18.0  lr 1.00e-03  (26 s)  [saved best]
+epoch 3/100  loss 0.621  val mIoU 26.3  lr 1.00e-03  (39 s)  [saved best]
+epoch 4/100  loss 0.509  val mIoU 32.3  lr 1.00e-03  (52 s)  [saved best]
+epoch 5/100  loss 0.443  val mIoU 31.3  lr 1.00e-03  (64 s)
+epoch 6/100  loss 0.379  val mIoU 35.6  lr 1.00e-03  (77 s)  [saved best]
+epoch 7/100  loss 0.343  val mIoU 39.8  lr 1.00e-03  (90 s)  [saved best]
+epoch 8/100  loss 0.274  val mIoU 38.9  lr 1.00e-03  (102 s)
+epoch 9/100  loss 0.252  val mIoU 38.7  lr 1.00e-03  (115 s)
+epoch 10/100  loss 0.242  val mIoU 40.1  lr 1.00e-03  (128 s)  [saved best]
+epoch 11/100  loss 0.203  val mIoU 43.4  lr 1.00e-03  (140 s)  [saved best]
+epoch 12/100  loss 0.207  val mIoU 41.5  lr 1.00e-03  (153 s)
+epoch 13/100  loss 0.188  val mIoU 42.7  lr 1.00e-03  (165 s)
+epoch 14/100  loss 0.161  val mIoU 42.3  lr 1.00e-03  (178 s)
+epoch 15/100  loss 0.135  val mIoU 50.0  lr 5.00e-04  (191 s)  [saved best]
+epoch 16/100  loss 0.126  val mIoU 49.0  lr 5.00e-04  (204 s)
+epoch 17/100  loss 0.109  val mIoU 48.4  lr 5.00e-04  (216 s)
+epoch 18/100  loss 0.102  val mIoU 49.2  lr 5.00e-04  (229 s)
+epoch 19/100  loss 0.093  val mIoU 50.3  lr 2.50e-04  (242 s)  [saved best]
+epoch 20/100  loss 0.089  val mIoU 50.2  lr 2.50e-04  (254 s)
+epoch 21/100  loss 0.090  val mIoU 49.9  lr 2.50e-04  (267 s)
+epoch 22/100  loss 0.084  val mIoU 49.1  lr 2.50e-04  (280 s)
+epoch 23/100  loss 0.082  val mIoU 50.2  lr 1.25e-04  (292 s)
+epoch 24/100  loss 0.079  val mIoU 50.1  lr 1.25e-04  (305 s)
+Early stopping: no improvement of more than 0.1 mIoU for 5 epochs
+Summary kd=none: 24 epochs, best val mIoU 50.3 at epoch 19, final lr 1.25e-04, training time 305 s (5.1 min, 12.7 s/epoch), hardware NVIDIA L4
+Saved checkpoints/my_student_none.pth (weights from epoch 19)
+Saved plots/loss_my_student_none.png
